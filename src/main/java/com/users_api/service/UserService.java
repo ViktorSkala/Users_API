@@ -13,6 +13,5 @@ public interface UserService {
     User updateUser(User user);
     User patchUser(User user);
     void delete(Long id);
-
     List<User> findUsersByDateOfBirth(LocalDate from, LocalDate to);
 }

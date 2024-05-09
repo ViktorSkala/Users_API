@@ -31,7 +31,6 @@ public class UserTest {
                 .dateOfBirth(LocalDate.parse("1990-01-01"))
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-
         Assertions.assertEquals(0, violations.size());
     }
 
@@ -41,7 +40,6 @@ public class UserTest {
                 .email("qwerty")
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user, Create.class);
-
         Assertions.assertEquals(4, violations.size());
     }
 
@@ -51,7 +49,6 @@ public class UserTest {
                 .email("qwerty")
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user, Update.class);
-
         Assertions.assertEquals(4, violations.size());
     }
 
@@ -61,7 +58,6 @@ public class UserTest {
                 .email("qwerty")
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user, Patch.class);
-
         Assertions.assertEquals(1, violations.size());
     }
 
@@ -71,8 +67,6 @@ public class UserTest {
                 .email("test@mail.ua")
                 .build();
         Set<ConstraintViolation<User>> violations = validator.validate(user, Patch.class);
-
         Assertions.assertEquals(0, violations.size());
     }
-
 }

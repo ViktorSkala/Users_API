@@ -2,28 +2,31 @@ package com.users_api.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.users_api.controller.UserController;
 import com.users_api.dto.UserDto;
 import com.users_api.request.UserRequestDto;
+import com.users_api.service.UserService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@WebMvcTest(GlobalExceptionHandler.class)
-@ActiveProfiles("test")
+@WebMvcTest({GlobalExceptionHandler.class, UserController.class})
 public class ExceptionsHandlerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private UserService userService;
 
     @Test
     public void testConstraintViolationException_ReturnJsonResponse() throws Exception {
@@ -39,13 +42,14 @@ public class ExceptionsHandlerTest {
                         .content(objectMapper.writeValueAsString(UserRequestDto.builder().data(invalidUser).build())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].detail").value("email can not be empty"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].detail").value("must be a well-formed email address"));
     }
 
     @Test
     public void testNoSuchElementException_ReturnJsonResponse() throws Exception {
-        mockMvc.perform(delete("/users/5"))
+        Mockito.when(userService.getUser(5L)).thenThrow(new NoSuchElementException("User with id=5 not found"));
+        mockMvc.perform(get("/users/5"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].detail").value("User with id=0 not found"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].detail").value("User with id=5 not found"));
     }
 }

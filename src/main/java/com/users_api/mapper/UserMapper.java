@@ -28,5 +28,4 @@ public class UserMapper {
                 .phoneNumber(user.getPhoneNumber())
                 .build();
     }
-
 }

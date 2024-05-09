@@ -158,5 +158,4 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors.length()").value(1));
     }
-
 }
