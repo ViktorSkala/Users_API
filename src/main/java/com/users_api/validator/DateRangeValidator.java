@@ -10,6 +10,9 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, String
 
     @Override
     public boolean isValid(String dateRangeString, ConstraintValidatorContext constraintValidatorContext) {
+        if (dateRangeString == null) {
+            return true;
+        }
         try {
             String[] dates = dateRangeString.split(",");
             LocalDate from = LocalDate.parse(dates[0], DateTimeFormatter.ISO_DATE);

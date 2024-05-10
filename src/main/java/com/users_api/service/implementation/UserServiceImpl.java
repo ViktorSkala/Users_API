@@ -1,5 +1,6 @@
 package com.users_api.service.implementation;
 
+import com.users_api.dto.UserFinderByParameterDto;
 import com.users_api.model.User;
 import com.users_api.repository.UserRepository;
 import com.users_api.service.UserService;
@@ -80,5 +81,17 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<User> findUsersByDateOfBirth(LocalDate from, LocalDate to) {
         return userRepository.findByDateOfBirthAfterAndDateOfBirthBefore(from, to);
+    }
+
+    @Override
+    public List<User> findUsersByParameters(UserFinderByParameterDto userParameters) {
+        return userRepository.findByParameters(userParameters.getUserId(),
+                userParameters.getFirstName(),
+                userParameters.getLastName(),
+                userParameters.getEmail(),
+                (userParameters.getDateOfBirthFrom() != null)? userParameters.getDateOfBirthFrom(): LocalDate.of(1900, 1, 1),
+                (userParameters.getDateOfBirthTo() != null)? userParameters.getDateOfBirthTo(): LocalDate.of(2100, 1, 1),
+                userParameters.getAddress(),
+                userParameters.getPhoneNumber());
     }
 }

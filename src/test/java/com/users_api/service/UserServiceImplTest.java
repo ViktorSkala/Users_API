@@ -1,5 +1,6 @@
 package com.users_api.service;
 
+import com.users_api.dto.UserFinderByParameterDto;
 import com.users_api.model.User;
 import com.users_api.repository.UserRepository;
 import com.users_api.service.implementation.UserServiceImpl;
@@ -134,5 +135,16 @@ public class UserServiceImplTest {
         List<User> result = userService.findUsersByDateOfBirth(fromDate, toDate);
         assertEquals(2, result.size());
     }
+
+    @Test
+    public void testFindUsersByParameters() {
+        List<User> userList = new ArrayList<>();
+        userList.add(new User());
+        Mockito.when(userRepository.findByParameters(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(userList);
+        UserFinderByParameterDto userFinderByParameterDto = UserFinderByParameterDto.builder().firstName("Nick").build();
+        List<User> result = userService.findUsersByParameters(userFinderByParameterDto);
+        assertEquals(1, result.size());
+    }
+
 }
 

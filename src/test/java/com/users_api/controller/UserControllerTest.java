@@ -3,6 +3,7 @@ package com.users_api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.users_api.dto.UserDto;
+import com.users_api.dto.UserFinderByParameterDto;
 import com.users_api.model.User;
 import com.users_api.request.UserRequestDto;
 import com.users_api.service.UserService;
@@ -114,12 +115,20 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testFilterUsersByDateOfBirth_ReturnList() throws Exception {
+    public void testFilterUsersByParameterBirthDay_ReturnList() throws Exception {
         LocalDate from = LocalDate.of(2010, 1, 1);
         LocalDate to = LocalDate.of(2020, 1, 1);
-        Mockito.when(userService.findUsersByDateOfBirth(from, to)).thenReturn(new ArrayList<>());
+        Mockito.when(userService.findUsersByParameters(any(UserFinderByParameterDto.class))).thenReturn(new ArrayList<>());
         mockMvc.perform(get("/users/")
                         .param("daterange", from.format(DateTimeFormatter.ISO_DATE) + "," + to.format(DateTimeFormatter.ISO_DATE)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testFilterUsersByParameterName_ReturnList() throws Exception {
+        Mockito.when(userService.findUsersByParameters(any(UserFinderByParameterDto.class))).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/users/")
+                        .param("name", "Nick"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 

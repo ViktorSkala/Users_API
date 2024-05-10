@@ -1,6 +1,7 @@
 package com.users_api.controller;
 
 import com.users_api.dto.UserDto;
+import com.users_api.dto.UserFinderByParameterDto;
 import com.users_api.mapper.UserMapper;
 import com.users_api.model.User;
 import com.users_api.request.UserRequestDto;
@@ -21,6 +22,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -95,11 +97,31 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> filterUsersByDateOfBirth(@DateRange @RequestParam("daterange") String dateRange) {
-        String[] dates = dateRange.split(",");
-        LocalDate from = LocalDate.parse(dates[0], DateTimeFormatter.ISO_DATE);
-        LocalDate to = LocalDate.parse(dates[1], DateTimeFormatter.ISO_DATE);
-        List<UserDto> result = userService.findUsersByDateOfBirth(from, to).stream()
+    public ResponseEntity<?> filterUsersByParameters(@RequestParam(value = "id", required = false) Long id,
+                                                     @RequestParam(value = "name", required = false) String firstName,
+                                                     @RequestParam(value = "last_name", required = false) String lastName,
+                                                     @RequestParam(value = "email", required = false) String email,
+                                                     @DateRange @RequestParam(value = "daterange", required = false) String dateRange,
+                                                     @RequestParam(value = "address", required = false) String address,
+                                                     @RequestParam(value = "phone_number", required = false) String phoneNumber) {
+        LocalDate from = null;
+        LocalDate to = null;
+        if (Objects.nonNull(dateRange)) {
+            String[] dates = dateRange.split(",");
+            from = LocalDate.parse(dates[0], DateTimeFormatter.ISO_DATE);
+            to = LocalDate.parse(dates[1], DateTimeFormatter.ISO_DATE);
+        }
+        UserFinderByParameterDto userParameters = UserFinderByParameterDto.builder()
+                .userId(id)
+                .email(email)
+                .firstName(firstName)
+                .lastName(lastName)
+                .dateOfBirthFrom(from)
+                .dateOfBirthTo(to)
+                .address(address)
+                .phoneNumber(phoneNumber)
+                .build();
+        List<UserDto> result = userService.findUsersByParameters(userParameters).stream()
                 .map(UserMapper::toDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(UsersResponseDto.builder().data(result).build());

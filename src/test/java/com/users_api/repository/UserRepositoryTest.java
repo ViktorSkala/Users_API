@@ -80,4 +80,11 @@ public class UserRepositoryTest {
         List<User> allUsers = userRepository.findByDateOfBirthAfterAndDateOfBirthBefore(from, to);
         Assertions.assertTrue(allUsers.size() == 2);
     }
+
+    @Test
+    public void testFindByParameters() {
+        List<User> allUsers = userRepository.findByParameters(null, "Nick", null, null, LocalDate.of(1989, 1, 1), LocalDate.of(2000, 1, 1), null, null);
+        Assertions.assertTrue(allUsers.size() == 1);
+        Assertions.assertTrue(allUsers.get(0).getFirstName().equals("Nick"));
+    }
 }
